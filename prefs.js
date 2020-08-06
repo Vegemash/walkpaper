@@ -112,15 +112,15 @@ const WalkpaperSettingsWidget = new GObject.Class({
         this.margin = 12;
         this.orientation = Gtk.Orientation.VERTICAL;
 
-        let scrolled = new Gtk.ScrolledWindow({ shadow_type: Gtk.ShadowType.IN });
-        scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
-        this.add(scrolled);
+        this._scrolled = new Gtk.ScrolledWindow({ shadow_type: Gtk.ShadowType.IN });
+        this._scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC);
+        // this.add(scrolled);
 
         this._store = new WalkpaperModel();
 
         this._treeView = new Gtk.TreeView({ model: this._store,
-                                            headers_visible: false,
-                                            reorderable: true,
+                                            headers_visible: true,
+                                            reorderable: false,
                                             hexpand: true,
                                             vexpand: true
                                           });
@@ -148,8 +148,14 @@ const WalkpaperSettingsWidget = new GObject.Class({
         this._treeView.append_column(columnPaths);
 
         this._treeView.connect('row-activated', Lang.bind(this, this._editPath));
+        let button = new Gtk.Button({label: "Fill from folder"})
 
-        scrolled.add(this._treeView);
+        let grid = new Gtk.Grid();
+        grid.attach(button, 0,0,1,1);
+        grid.attach(this._treeView, 0,1,1,1);
+        this._scrolled.add(grid);
+        this.add(this._scrolled)
+
     },
     _editPath: function(renderer, path, data) {
         let chooser = new Gtk.FileChooserDialog({
